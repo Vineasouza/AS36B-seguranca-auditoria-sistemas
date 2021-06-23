@@ -8,14 +8,17 @@ import select
 import traceback
 from cryptography.fernet import Fernet
 
+# Função responsável por abrir o arquivo e ler o arquivo, e retornar a chave secreta
 def read_key():
     f = open("key.txt", "r")
     return f.read().encode()
 
+#Função responsável por receber uma string e uma chave secreta, retornando o conteúdo criptografado
 def encrypt(msg, key):
     fernet = Fernet(key)
     return fernet.encrypt(msg.encode())
 
+#Função responsável por receber uma mensagem criptografada e uma chave secreta, retornando o conteúdo descriptografado
 def decrypt(msg, key):
     fernet = Fernet(key)
     return fernet.decrypt(msg, ttl=10000).decode()
@@ -36,7 +39,7 @@ class Server(threading.Thread):
                     s = item.recv(4096)
                     if s != '':
                         chunk = s #própria mensagem recebida se nao vazia                        
-                        print(decrypt(chunk, read_key()) + '\n>>')
+                        print(decrypt(chunk, read_key()) + '\n>>')  #descriptografa a mensagem recebida chamado a função e exibe o conteúdo
                 except:
                     traceback.print_exc(file=sys.stdout)
                     break
@@ -81,7 +84,7 @@ class Client(threading.Thread):
                 continue
             # print "Sending\n"
             msg = user_name + ': ' + msg 
-            data = encrypt(msg, read_key())
+            data = encrypt(msg, read_key())  #criptografa a mensagem utilizando a função e armazana o conteúdo na variavel data
             self.client(host, port, data)
         return (1)
 

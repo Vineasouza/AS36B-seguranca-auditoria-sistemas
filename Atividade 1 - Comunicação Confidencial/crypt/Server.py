@@ -11,6 +11,9 @@ SOCKET_LIST = []
 TO_BE_SENT = []
 SENT_BY = {}
 
+# Função responsável por:
+#  - gera uma chave secreta e armazenar na variável KEY_GEN  
+# - abrir um arquivo e gravar o conteúdo da variável KEY_GEN  
 def write_key():
     KEY_GEN = Fernet.generate_key()
     f = open("key.txt", "w")
