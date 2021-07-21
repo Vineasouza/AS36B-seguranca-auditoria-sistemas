@@ -163,6 +163,36 @@ def show_last_chain():
     chain_last= json.dumps(chain_data[blockchain.last_block.index], indent=2, sort_keys=True) 
     print(chain_last)
 
+def PoW(index : int):
+    """
+    Teste de prova de trabalho de um bloco específico
+    """
+    # Percorre todas os blocos para encontrar o bloco com o index requerido
+    chain_data = []
+    for block in blockchain.chain:
+        chain_data.append(block.__dict__)
+    x = chain_data[index]
+    block = Block(index=index, transactions=x["transactions"], timestamp=x["timestamp"], previous_hash=x["previous_hash"])
+
+    # mostra o
+    print("\tPrev hash: " + x["previous_hash"])
+
+    # Função que tenta diferentes valores de nonce para obter um hash que satisfaça nossos critérios de dificuldade
+    # printando o tempo requerido
+    t_proof = time.process_time()
+    proof_hash = blockchain.proof_of_work(block)
+    elapsed_time_proof = time.process_time() - t_proof
+    print("\n\tProof hash: " + proof_hash)
+    print("\tTempo de PoW do bloco: " + str(elapsed_time_proof) + "s\n")
+
+    # Verifica se block_hash é um hash de bloco válido e satisfaz os critérios de dificuldade
+    # printando o tempo requerido
+    v_proof = time.process_time()
+    valid_proof = blockchain.is_valid_proof(block, proof_hash)
+    elapsed_time_proof_v = time.process_time() - v_proof
+    print("\n\tIs valid proof: " + str(valid_proof))
+    print("\tTempo de validação do PoW do bloco: " + str(elapsed_time_proof_v) + "s\n")
+    
 def clearCMD():
     """
     Limpa o terminal
@@ -172,6 +202,7 @@ def clearCMD():
 if __name__ == '__main__':
     blockchain = Blockchain()
 
+    clearCMD()
     dffclty = input("\n\tDefina a dificuldade >> ")
     blockchain.setDifficulty(int(dffclty))
 
@@ -182,6 +213,7 @@ if __name__ == '__main__':
         print("\t2 - Mostrar todos os blocos")
         print("\t3 - Mostrar um bloco de index especifíco")
         print("\t4 - Mostrar o ultimo bloco ")
+        print("\t5 - PoW bloco específico ")
         print("\texit - Sair da aplicação")
         print("\t************************************************")
         opt = input("\n\tEscolha uma opção >> ")
@@ -217,6 +249,18 @@ if __name__ == '__main__':
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        elif(opt == '5'):
+            clearCMD() 
+            idx = input("\tEscolha um index de 0 ate " + str(blockchain.last_block.index) + " >> ")
+            if(int(idx) <= blockchain.last_block.index):
+                PoW(int(idx))
+            else:
+                clearCMD()
+                print("\n\t************************************************")
+                print("\n\tValor Inválido")
+            print("\n\t************************************************")
+            sair = input("\n\tEnter para voltar para o menu ")
+
         elif(opt == 'exit'):
             clearCMD()
             sys.exit()
@@ -229,10 +273,7 @@ if __name__ == '__main__':
             sair = input("\n\tEnter para voltar para o menu ")
 
 
-
-
-# blockchain.is_valid_proof(blockchain.last_block,blockchain.proof_of_work(blockchain.last_block) )  
-
+# -----------------------------------------------------#
 # app = Flask(__name__)
 # blockchain = Blockchain()
 
@@ -245,4 +286,4 @@ if __name__ == '__main__':
 #                        "chain": chain_data})
 
 # app.run(debug=True, port=5000)
-
+# -----------------------------------------------------#
