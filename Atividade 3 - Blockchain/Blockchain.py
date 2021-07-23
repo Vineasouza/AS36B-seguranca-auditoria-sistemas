@@ -192,7 +192,25 @@ def PoW(index : int):
     elapsed_time_proof_v = time.process_time() - v_proof
     print("\n\tIs valid proof: " + str(valid_proof))
     print("\tTempo de validação do PoW do bloco: " + str(elapsed_time_proof_v) + "s\n")
-    
+
+def validarTodosBlocos():
+    """
+    Rotina para validar todos os blocos 
+    """
+    chain_data = []
+    for block in blockchain.chain:
+        chain_data.append(block.__dict__)
+    for i in range(blockchain.last_block.index):
+        print("\n\n\tValidando bloco: " + str(i) + " de " + str(blockchain.last_block.index - 1) + " blocos")
+        x = chain_data[i]
+        print("\tPrev hash: " + x["previous_hash"])
+        block = Block(index=i, transactions=x["transactions"], timestamp=x["timestamp"], previous_hash=x["previous_hash"])
+        proof_hash = blockchain.proof_of_work(block)
+        print("\tProof hash: " + proof_hash)
+        valid_proof = blockchain.is_valid_proof(block, proof_hash)
+        print("\tIs valid proof - bloco " + str(i) + ": " + str(valid_proof))
+
+
 def clearCMD():
     """
     Limpa o terminal
@@ -214,14 +232,21 @@ if __name__ == '__main__':
         print("\t3 - Mostrar um bloco de index especifíco")
         print("\t4 - Mostrar o ultimo bloco ")
         print("\t5 - PoW bloco específico ")
+        print("\t6 - Rotina de validação de todos os blocos")
+        print("\t7 - Mudar dificuldade ")
         print("\texit - Sair da aplicação")
         print("\t************************************************")
         opt = input("\n\tEscolha uma opção >> ")
         
         if(opt == '1'):
             clearCMD()
-            trx = input("\tInsira uma transação >> ")
-            add_chain_transaction(trx)
+            trx = input("\tInsira uma transação numérica >> ")
+            if(trx.isdigit() and len(trx) > 0):
+                add_chain_transaction(trx)
+            else:
+                clearCMD()
+                print("\n\t************************************************")
+                print("\n\tValor Inválido")  
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
@@ -258,6 +283,19 @@ if __name__ == '__main__':
                 clearCMD()
                 print("\n\t************************************************")
                 print("\n\tValor Inválido")
+            print("\n\t************************************************")
+            sair = input("\n\tEnter para voltar para o menu ")
+        
+        elif(opt == '6'):
+            clearCMD()
+            validarTodosBlocos()
+            print("\n\t************************************************")
+            sair = input("\n\tEnter para voltar para o menu ")
+
+        elif(opt == '7'):
+            clearCMD()
+            dffclty = input("\tDefina a dificuldade >> ")
+            blockchain.setDifficulty(int(dffclty)) 
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
 
