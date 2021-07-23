@@ -193,13 +193,16 @@ def PoW(index : int):
     print("\n\tIs valid proof: " + str(valid_proof))
     print("\tTempo de validação do PoW do bloco: " + str(elapsed_time_proof_v) + "s\n")
 
-def validarTodosBlocos():
+def validateAllBlocks():
     """
     Rotina para validar todos os blocos 
     """
+    # Armazena todos os blocos existentes no array chain_data
     chain_data = []
     for block in blockchain.chain:
         chain_data.append(block.__dict__)
+
+    # Percorre o array realizando o PoW e a validação de cada bloco
     for i in range(blockchain.last_block.index):
         print("\n\n\tValidando bloco: " + str(i) + " de " + str(blockchain.last_block.index - 1) + " blocos")
         x = chain_data[i]
@@ -209,6 +212,57 @@ def validarTodosBlocos():
         print("\tProof hash: " + proof_hash)
         valid_proof = blockchain.is_valid_proof(block, proof_hash)
         print("\tIs valid proof - bloco " + str(i) + ": " + str(valid_proof))
+
+def changeValueOf(idx : int, newValue : int):
+    """
+    Função que permite mudar o valor de um bloco e revalida todos os blocos que dependem dele 
+    """
+    chain_data = []
+    chain_aux_1 = []
+    chain_aux_2 = []
+
+    # Verifica se o index é zero
+    if (int(idx) == 0): raise IndexError
+
+    # Armazena todos os blocos existentes no array chain_data
+    for block in blockchain.chain:
+        chain_data.append(block.__dict__)
+
+    # Retira todos os blocos que estão entre o final e o index recebido, passando o valor para o array auxiliar
+    for i in range(int(idx), len(blockchain.chain)):
+        chain_aux_1.append(blockchain.chain.pop((int(idx))))
+
+    # varre o array auxiliar 1, verificando que sempre o valor do index do valor a ser mudado é o 0 e seta o novo valor
+    # caso nao for o index do valor a ser modificado, apenas passa o atributo da lista para o array auxiliar 2
+    for i in range(len(chain_aux_1)):
+        if(i == 0):
+            setattr(chain_aux_1[i], "transactions", newValue)
+        chain_aux_2.append(getattr(chain_aux_1[i],"transactions"))
+    
+    clearCMD()
+    print("\n\t************************************************")
+    print("\n\tRevalidando Blocos")
+    print("\n\t************************************************")
+    
+
+    # Percorre o array auxiliar 2, verificando se a posição possui um int ou um list
+    # Envia o valor para a função que adicionar um novo bloco a Blockchain
+    for i in range(len(chain_aux_2)):
+        x = 0
+        if(type(chain_aux_2[i]) == int):
+            x = chain_aux_2[i]
+            add_chain_transaction(x)
+        elif(type(chain_aux_2[i]) == list):
+            x = chain_aux_2[i]
+            add_chain_transaction(x[0])
+    
+    print("\n\n\t************************************************")
+    print("\n\tBlocos Revalidados, Blockchain como novo valor pronta!")
+    print("\n\t************************************************")
+    input("\n\t>>Pressione enter<<")
+
+    show_all_chains()
+
 
 
 def clearCMD():
@@ -226,18 +280,21 @@ if __name__ == '__main__':
 
     while(1):
         clearCMD()
+        # ********************************************************* MENU ********************************************************** #
         print("\t************************************************")
         print("\t1 - Adicionar uma transação")
         print("\t2 - Mostrar todos os blocos")
         print("\t3 - Mostrar um bloco de index especifíco")
         print("\t4 - Mostrar o ultimo bloco ")
         print("\t5 - PoW bloco específico ")
-        print("\t6 - Rotina de validação de todos os blocos")
-        print("\t7 - Mudar dificuldade ")
+        print("\t6 - Mudar o valor de um bloco específico ")
+        print("\t7 - Rotina de validação de todos os blocos")
+        print("\t8 - Mudar dificuldade ")
         print("\texit - Sair da aplicação")
         print("\t************************************************")
         opt = input("\n\tEscolha uma opção >> ")
         
+        # ********************************************************* OPT 1 ********************************************************* #
         if(opt == '1'):
             clearCMD()
             trx = input("\tInsira uma transação numérica >> ")
@@ -250,16 +307,18 @@ if __name__ == '__main__':
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        # ********************************************************* OPT 2 ********************************************************* #
         elif(opt == '2'):
             clearCMD()
             show_all_chains()
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        # ********************************************************* OPT 3 ********************************************************* #
         elif(opt == '3'):
             clearCMD()
             idx = input("\tEscolha um index de 0 ate " + str(blockchain.last_block.index) + " >> ")
-            if(int(idx) <= blockchain.last_block.index):
+            if(idx.isdigit() and int(idx) <= blockchain.last_block.index):
                 show_specific_chain(int(idx))
             else:
                 clearCMD()
@@ -268,16 +327,18 @@ if __name__ == '__main__':
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        # ********************************************************* OPT 4 ********************************************************* #
         elif(opt == '4'):
             clearCMD()
             show_last_chain()
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        # ********************************************************* OPT 5 ********************************************************* #
         elif(opt == '5'):
             clearCMD() 
             idx = input("\tEscolha um index de 0 ate " + str(blockchain.last_block.index) + " >> ")
-            if(int(idx) <= blockchain.last_block.index):
+            if(idx.isdigit() and int(idx) <= blockchain.last_block.index):
                 PoW(int(idx))
             else:
                 clearCMD()
@@ -286,23 +347,41 @@ if __name__ == '__main__':
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
         
+        # ********************************************************* OPT 6 ********************************************************* #
         elif(opt == '6'):
             clearCMD()
-            validarTodosBlocos()
+            idx = input("\tEscolha um index de 1 ate " + str(blockchain.last_block.index) + " do bloco que deseja mudar o valor >> ")
+            newValue = input("\tDigite o novo valor do bloco >> ")
+            if(int(idx) > 0 and newValue.isdigit() and idx.isdigit() and int(idx) <= blockchain.last_block.index):
+                changeValueOf(int(idx), int(newValue))
+            else:
+                clearCMD()
+                print("\n\t************************************************")
+                print("\n\tValor Inválido")
+            print("\n\t************************************************")
+            sair = input("\n\tEnter para voltar para o menu ")
+        
+        # ********************************************************* OPT 7 ********************************************************* #
+        elif(opt == '7'):
+            clearCMD()
+            validateAllBlocks()
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
 
-        elif(opt == '7'):
+        # ********************************************************* OPT 8 ********************************************************* #
+        elif(opt == '8'):
             clearCMD()
             dffclty = input("\tDefina a dificuldade >> ")
             blockchain.setDifficulty(int(dffclty)) 
             print("\n\t************************************************")
             sair = input("\n\tEnter para voltar para o menu ")
 
+        # ******************************************************* OPT EXIT ******************************************************** #
         elif(opt == 'exit'):
             clearCMD()
             sys.exit()
         
+        # ******************************************************* DEFAULT ********************************************************* #
         else:
             clearCMD()
             print("\n\t************************************************")
