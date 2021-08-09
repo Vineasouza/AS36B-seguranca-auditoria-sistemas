@@ -1,0 +1,8 @@
+1. Explique o conteúdo obtido através do tcpdump na máquina EMPRESA2 sendo que ela não foi destino e nem origem de qualquer comunicação. E se fosse umarede sem fio com proteção fraca?
+
+2. Quais seriam opções para melhorar a rede interna cabeada? E sem fio?
+
+3. Como os pacotes são modificados em cada regra do iptables nos comandos executados neste laboratório?
+
+4. O que aconteceu com o ftp do SERVIDOR ao criar uma regra bloqueando a porta
+20?

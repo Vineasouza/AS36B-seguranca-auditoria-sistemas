@@ -68,15 +68,15 @@ class Server(threading.Thread):
                 break
         
         # Após o recebimento dos valores de 'n' e 'e' da chave publica do cliente 2,
-        # recebe um ok do cliente 2, sendo ele gravado no arquivo 'ok1.txt' 
+        # recebe um ok do cliente 2, sendo ele gravado no arquivo 'handshake.txt' 
         # para posterior finalização do handshake entre os clientes
         for item in read:
             try:
                 s = item.recv(1024)
                 if s != '':
-                    # Le o valor 'Ok' e grava no arquivo 'ok1.txt'
+                    # Le o valor 'Ok' e grava no arquivo 'handshake.txt'
                     ok = s
-                    k = open('ok1.txt','wb')
+                    k = open('handshake.txt','wb')
                     k.write(ok)
                     k.close()
                 else:
@@ -164,15 +164,18 @@ class Client(threading.Thread):
 
         # Ao iniciar o cliente, realiza o envio do valor de 'n' da chave publica do cliente1 para o cliente 2
         self.client(host,port,bytes(str(npublico_client1), encoding='utf8'))
-        time.sleep(1)
+        # time.sleep(1)
+        time.sleep(2)
 
 
         # Realiza o envio do valor de 'e' da chave publica do cliente 1  e fica aguardando o recebimento da chave publica do cliente 2
         self.client(host,port,bytes(str(epublico_client1), encoding='utf8'))
-        time.sleep(3)
+        # time.sleep(3)
+        time.sleep(4)
         
         # Gera uma chave simétrica, armazenando-a no arquivo 'keyssimetrica.key' e 
         # realiza o envio desta chave , criptografando-a  a partir da chave publica do cliente 2
+        # *************REFAZER***********************
         keysimetrica = Fernet.generate_key()
         f = Fernet(keysimetrica)
         sk = open('keysimetrica.key','wb') #salva em um arquivo
@@ -191,11 +194,11 @@ class Client(threading.Thread):
         time.sleep(5)
 
         # Loop de verificação do handshake
-        # Verifica se o arquivo 'ok1.txt' ja existe e se existe algo gravado nele
+        # Verifica se o arquivo 'handshake.txt' ja existe e se existe algo gravado nele
         # Se sim, passa para o próximo passo, se não, continua aguardando o fim do handshake, com um intervalo de 10s
         while 1: #checa se já acabou o handshake
-            if (os.path.isfile('ok1.txt')): 
-                if (os.path.getsize('ok1.txt') > 0):
+            if (os.path.isfile('handshake.txt')): 
+                if (os.path.getsize('handshake.txt') > 0):
                     break
                 else:
                     print(">> Aguardando Fim do Handshake... <<")

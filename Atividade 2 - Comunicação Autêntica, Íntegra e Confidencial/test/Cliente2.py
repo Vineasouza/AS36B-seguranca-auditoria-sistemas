@@ -177,7 +177,8 @@ class Client(threading.Thread):
 
         # Ao iniciar o cliente, realiza o envio do valor de 'n' da chave publica do cliente 2 para o cliente 1
         self.client(host,port,bytes(str(npublico_cliente2), encoding='utf8'))
-        time.sleep(1)
+        # time.sleep(1)
+        time.sleep(3)
 
          # Realiza o envio do valor de 'e' da chave publica do cliente 2  e fica aguardando o recebimento da chave publica do cliente 1
         self.client(host,port,bytes(str(epublico_cliente2), encoding='utf8'))
