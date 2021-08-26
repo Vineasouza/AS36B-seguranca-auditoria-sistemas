@@ -1,3 +1,6 @@
 #configuracao do host EMPRESA3
+apt update
+apt install -y proftpd-basic proftpd-doc
+/etc/init.d/proftpd restart
 ifconfig eth0 10.1.1.13 netmask 255.0.0.0 up
 route add default gw 10.1.1.1 dev eth0

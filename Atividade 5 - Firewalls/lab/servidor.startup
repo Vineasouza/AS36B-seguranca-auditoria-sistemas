@@ -1,4 +1,8 @@
 #configuracao do SERVIDOR da empresa
+apt update
+apt install -y proftpd-basic proftpd-doc
+/etc/init.d/proftpd restart
+
 ifconfig eth0 10.1.1.1 netmask 255.0.0.0 up
 ifconfig eth1 202.135.187.131 netmask 255.255.255.192 up
 route add default gw 202.135.187.129 dev eth1
