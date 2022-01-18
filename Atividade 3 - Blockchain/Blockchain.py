@@ -263,8 +263,6 @@ def changeValueOf(idx : int, newValue : int):
 
     show_all_chains()
 
-
-
 def clearCMD():
     """
     Limpa o terminal
